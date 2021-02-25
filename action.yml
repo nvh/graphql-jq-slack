@@ -26,11 +26,13 @@ runs:
           --header "Content-Type: application/json" \
           --data '{"query": "${{ inputs.graphql }}"}' > graphql-output.json
         echo "::set-output name=graphql-output::$(cat graphql-output.json)"
+      shell: bash
       env:
         GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
     - id: jq-filter
       run: |
         cat graphql-output.json | jq ${{ inputs.jq }} > jq-output.json
         echo "::set-output name=jq-output::$(cat jq-output.json)"
+      shell: bash
     - run: ${{ github.action_path }}/goodbye.sh
       shell: bash
