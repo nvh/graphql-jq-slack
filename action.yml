@@ -8,6 +8,9 @@ inputs:
     description: "jq filter"
     required: false
     default: ".data"
+  slack-channel:
+    description: "The Slack channel to post to"
+    required: true
 outputs:
   graphql:
     description: "The output of the graphql query"
@@ -19,6 +22,7 @@ runs:
   using: "composite"
   steps:
     - id: graphql-query
+      name: "Execute GraphQL query"
       run: |
         printf '{"query": "%s"}' "$QUERY" > graphql-input.json
         curl https://api.github.com/graphql  \
@@ -34,9 +38,21 @@ runs:
         GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
         QUERY: ${{ inputs.graphql }}
     - id: jq-filter
+      name: "Filter with jq"
       run: |
         cat graphql-output.json | jq --compact-output ${{ inputs.jq }} > jq-output.json
         echo "::set-output name=jq-output::$(cat jq-output.json)"
       shell: bash
-    - run: ${{ github.action_path }}/goodbye.sh
+    - id: post-to-slack
+      name: "Post to Slack"
+      if: env.SLACK_TOKEN != 0 && inputs.slack-channel != 0 # Check if the token and channel is set
+      run: |
+        printf '{ "channel": "${{ inputs.slack-channel }}", "blocks": %s }' "$BLOCKS" > slack-input.json
+        curl https://slack.com/api/chat.postMessage \
+          --header "Content-type: application/json" \
+          --header "Authorization: Bearer $SLACK_TOKEN" \
+          --data '@slack-input.json'
       shell: bash
+      env:
+        SLACK_TOKEN: ${{ env.SLACK_TOKEN }}
+        BLOCKS: ${{ steps.jq-filter.outputs.jq-output }}
