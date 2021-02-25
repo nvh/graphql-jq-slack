@@ -47,6 +47,7 @@ runs:
       name: "Post to Slack"
       run: |
         printf '{ "channel": "${{ inputs.slack-channel }}", "blocks": %s }' "$BLOCKS" > slack-input.json
+        cat slack-input.json
         curl https://slack.com/api/chat.postMessage \
           --header "Content-type: application/json" \
           --header "Authorization: Bearer $SLACK_TOKEN" \
