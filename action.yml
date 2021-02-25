@@ -16,11 +16,11 @@ runs:
   using: "composite"
   steps:
     - uses: octokit/graphql-action@v2.x
-        id: graphql-query
-        with:
-          query: ${{ inputs.graphql }}
-        env:
-          GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+      id: graphql-query
+      with:
+        query: ${{ inputs.graphql }}
+      env:
+        GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
     - run: echo Hello ${{ inputs.who-to-greet }}.
       shell: bash
     - id: random-number-generator
