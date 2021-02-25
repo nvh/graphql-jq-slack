@@ -25,6 +25,7 @@ runs:
           --header "Authorization: token $GITHUB_TOKEN" \
           --header "Content-Type: application/json" \
           --data '{"query": "${{ inputs.graphql }}"}' > graphql-output.json
+        echo '{"query": "${{ inputs.graphql }}"}'
         cat graphql-output.json
         echo "::set-output name=graphql-output::$(cat graphql-output.json)"
       shell: bash
