@@ -31,8 +31,6 @@ runs:
           --header "Authorization: token $GITHUB_TOKEN" \
           --header "Content-Type: application/json" \
           --data '@graphql-input.json' > graphql-output.json
-        cat graphql-input.json
-        cat graphql-output.json
         echo "::set-output name=graphql-output::$(cat graphql-output.json)"
       shell: bash
       env:
@@ -48,7 +46,6 @@ runs:
       name: "Post to Slack"
       run: |
         printf '{ "channel": "${{ inputs.slack-channel }}", "blocks": %s }' "$BLOCKS" > slack-input.json
-        cat slack-input.json
         curl https://slack.com/api/chat.postMessage \
           --header "Content-type: application/json" \
           --header "Authorization: Bearer $SLACK_TOKEN" \
