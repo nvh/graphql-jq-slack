@@ -4,27 +4,33 @@ inputs:
   graphql:
     description: "GraphQL query"
     required: true
-  who-to-greet: # id of input
-    description: "Who to greet"
-    required: true
-    default: "World"
+  jq:
+    description: "jq filter"
+    required: false
+    default: ".data"
 outputs:
-  random-number:
-    description: "Random number"
-    value: ${{ steps.random-number-generator.outputs.random-id }}
+  graphql:
+    description: "The output of the graphql query"
+    value: ${{ steps.graphql-query.outputs.graphql-output }}
+  jq:
+    description: "The output of the graphql query"
+    value: ${{ steps.jq-filter.outputs.jq-output }}
 runs:
   using: "composite"
   steps:
-    - uses: octokit/graphql-action@v2.x
-      id: graphql-query
-      with:
-        query: ${{ inputs.graphql }}
+    - id: graphql-query
+      run: |
+        curl https://api.github.com/graphql  \
+          --silent \
+          --header "Authorization: token $GITHUB_TOKEN" \
+          --header "Content-Type: application/json" \
+          --data '{"query": "${{ inputs.graphql }}"}' > graphql-output.json
+        echo "::set-output name=graphql-output::$(cat graphql-output.json)"
       env:
         GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
-    - run: echo Hello ${{ inputs.who-to-greet }}.
-      shell: bash
-    - id: random-number-generator
-      run: echo "::set-output name=random-id::$(echo $RANDOM)"
-      shell: bash
+    - id: jq-filter
+      run: |
+        cat graphql-output.json | jq ${{ inputs.jq }} > jq-output.json
+        echo "::set-output name=jq-output::$(cat jq-output.json)"
     - run: ${{ github.action_path }}/goodbye.sh
       shell: bash
