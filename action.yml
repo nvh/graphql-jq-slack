@@ -35,7 +35,7 @@ runs:
         QUERY: ${{ inputs.graphql }}
     - id: jq-filter
       run: |
-        cat graphql-output.json | jq ${{ inputs.jq }} > jq-output.json
+        cat graphql-output.json | jq --compact-output ${{ inputs.jq }} > jq-output.json
         echo "::set-output name=jq-output::$(cat jq-output.json)"
       shell: bash
     - run: ${{ github.action_path }}/goodbye.sh
