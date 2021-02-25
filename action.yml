@@ -39,7 +39,7 @@ runs:
     - id: jq-filter
       name: "Filter with jq"
       run: |
-        cat graphql-output.json | jq --compact-output 'include "./jq/slack"; ${{ inputs.jq }}' > jq-output.json
+        cat graphql-output.json | jq --compact-output 'include "${{ github.action_path }}/jq/slack"; ${{ inputs.jq }}' > jq-output.json
         echo "::set-output name=jq-output::$(cat jq-output.json)"
       shell: bash
     - id: post-to-slack
