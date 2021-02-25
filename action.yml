@@ -20,7 +20,7 @@ runs:
   steps:
     - id: graphql-query
       run: |
-        printf '{"query": "%s"}' "$INPUT" > graphql-input.json
+        printf '{"query": "%s"}' "$QUERY" > graphql-input.json
         curl https://api.github.com/graphql  \
           --silent \
           --header "Authorization: token $GITHUB_TOKEN" \
