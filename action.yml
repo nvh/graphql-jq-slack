@@ -1,6 +1,9 @@
 name: "Hello World"
 description: "Greet someone"
 inputs:
+  graphql:
+    description: "GraphQL query"
+    required: true
   who-to-greet: # id of input
     description: "Who to greet"
     required: true
@@ -12,6 +15,12 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - uses: octokit/graphql-action@v2.x
+        id: graphql-query
+        with:
+          query: ${{ inputs.graphql }}
+        env:
+          GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
     - run: echo Hello ${{ inputs.who-to-greet }}.
       shell: bash
     - id: random-number-generator
