@@ -24,7 +24,8 @@ runs:
     - id: graphql-query
       name: "Execute GraphQL query"
       run: |
-        printf '{"query": "%s"}' "$QUERY" > graphql-input.json
+        ESCAPED_QUERY=${QUERY//'"'/'\"'}
+        printf '{"query": "%s"}' "$ESCAPED_QUERY" > graphql-input.json
         curl https://api.github.com/graphql  \
           --silent \
           --header "Authorization: token $GITHUB_TOKEN" \
